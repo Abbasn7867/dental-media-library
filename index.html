@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dental Clinic Media Library Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: calm, clinical-warm studio bible; precise like a production design handbook.
+IDEA: a production designer's look-book / continuity bible for one set.
+PICTURE: the hero reference frame itself, large, with the palette pulled from it as paint chips.
+COLOUR and TYPE: seafoam wall ground, deep teal ink & bands, oak accent; Fraunces titles + Inter body.
+LAYOUT: hero reference + chips, sticky section links, card grids of copy-ready prompts, a prompt builder.
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#f6faf9,#0c1a1c);--panel:light-dark(#ffffff,#122629);--sea:light-dark(#dcefeb,#16302f);
+--ink:light-dark(#11292c,#e3f1ee);--muted:light-dark(#4d6a6d,#9fbdbb);--teal:light-dark(#2f6b75,#7cc3c8);
+--teal-d:#1f4f57;--oak:#c99f6c;--line:light-dark(#cfe2de,#24403f);--code:light-dark(#eef6f4,#0f2224)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:500;line-height:1.08;text-wrap:balance;margin:0 0 .4em}
+h1{font-size:clamp(32px,4.6vw,52px)}h2{font-size:clamp(26px,3vw,36px)}h3{font-size:19px;font-weight:600}
+p{margin:0 0 1em;max-width:70ch}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.lede{font-size:17px;color:var(--muted)}
+pre,.scroll{overflow-x:auto}code{overflow-wrap:anywhere}html{scroll-padding-top:72px;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* hero */
+.hero{background:var(--sea)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,.8fr);gap:18px;margin-top:22px}
+.hero figure{margin:0;border-radius:14px;overflow:hidden;position:relative;background:#cfe6e2}
+.hero img{display:block;width:100%;height:100%;object-fit:cover}
+.hero figcaption{position:absolute;left:10px;bottom:10px;background:rgba(17,41,44,.78);color:#fff;font-size:13px;padding:4px 10px;border-radius:20px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px;margin-top:18px}
+.chip{background:var(--panel);border-radius:10px;overflow:hidden;border:1px solid var(--line);font-size:13px}
+.chip i{display:block;height:46px}.chip div{padding:6px 9px}.chip b{display:block;font-weight:600}.chip span{color:var(--muted);white-space:nowrap}
+/* nav */
+nav.scroll{position:sticky;top:0;z-index:5;background:var(--teal-d);display:flex;gap:4px;padding:8px max(5vw,16px)}
+nav.scroll a{flex:none;color:#e3f4f1;text-decoration:none;font-size:14px;padding:10px 12px;border-radius:8px;min-height:44px;display:flex;align-items:center}
+nav.scroll a:hover,nav.scroll a:focus-visible{background:#2f6b75;outline:none}
+nav.scroll a.on{background:#2f6b75;box-shadow:inset 0 -3px 0 #9fe0dc}
+.goform{flex:none;display:flex;gap:6px;align-items:center;margin-right:8px;position:sticky;left:0;z-index:2;background:var(--teal-d);padding:0 8px 0 0;box-shadow:-80px 0 0 var(--teal-d)}
+.addrow label.btn{display:inline-flex;align-items:center}
+@media(max-width:600px){.goform input{width:110px}}
+.goform input{font:15px Inter,sans-serif;width:170px;min-height:40px;border-radius:8px;border:0;padding:0 10px;background:#eaf6f4;color:#11292c}
+.goform .btn{min-height:40px;background:#9fe0dc;color:#11292c!important}
+.jump{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 18px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.jump a{font-size:13.5px;text-decoration:none;color:var(--teal);border:1px solid var(--line);border-radius:20px;padding:6px 11px;background:var(--code);min-height:34px;display:inline-flex;align-items:center}
+.jump a:hover,.jump a:focus-visible{background:var(--teal);color:#fff;outline:none}
+.plan .prompt{max-height:8.5em;overflow:auto}.combined.done{max-height:14em;overflow:auto}
+.flash{animation:fl 1.6s ease}@keyframes fl{0%,40%{box-shadow:0 0 0 4px var(--oak)}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.flash{animation:none}}
+.fab{position:fixed;z-index:15;bottom:18px;border:0;border-radius:24px;min-height:46px;padding:0 16px;font:600 14px Inter,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+#fabNext{left:18px;background:var(--oak);color:#2a1a00}#fabTop{right:18px;background:var(--teal-d);color:#fff;opacity:0;pointer-events:none;transition:opacity .2s}#fabTop.show{opacity:1;pointer-events:auto}
+.card{scroll-margin-top:72px}.plan{scroll-margin-top:72px}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,360px),1fr));gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column}
+.card .meta{font-size:13px;color:var(--muted);margin-bottom:8px}
+.card ul{margin:0 0 10px;padding-left:18px;font-size:14px}
+.prompt{position:relative;background:var(--code);border-radius:10px;padding:12px 12px 12px;font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;margin:6px 0 10px;border:1px solid var(--line)}
+.label{font-size:13px;font-weight:600;color:var(--teal);margin-top:4px}
+.btn{font:600 14px Inter,sans-serif;border:0;border-radius:8px;background:var(--teal);color:#fff;padding:0 14px;min-height:44px;cursor:pointer;align-self:flex-start}
+:root:not([data-theme=light]) .btn{color:light-dark(#fff,#0c1a1c)}
+.btn.ghost{background:transparent;color:var(--teal)!important;border:1px solid var(--teal)}
+.tealband .btn.ghost{color:#9fe0dc!important;border-color:#9fe0dc}
+.btn:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--oak);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tealband{background:var(--teal-d);color:#e9f6f3}
+.tealband .prompt{background:#173f45;border-color:#2c5d64;color:#e9f6f3}
+.tealband .label{color:#9fe0dc}.tealband table,.tealband select{color:var(--ink)}.tealband p{color:#cfe8e4}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--panel);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--sea);font-weight:600}
+/* builder */
+.builder{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;font-size:14px;font-weight:600}
+select{font:16px Inter,sans-serif;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:0 10px}
+.out{font-size:14px}
+.alert{background:light-dark(#fff4e0,#3a2c12);color:light-dark(#6b4300,#ffd99a);border:1px solid light-dark(#f0c77a,#7a5a22);border-radius:8px;padding:8px 10px;font-size:13.5px;margin:0 0 8px}
+.alert b{font-weight:600}
+.order{display:flex;flex-wrap:wrap;gap:6px;font-size:12.5px;margin:2px 0 8px}
+.order span{background:var(--sea);color:var(--ink);border-radius:20px;padding:3px 9px;white-space:nowrap}
+.order span.neg{background:light-dark(#fde2e2,#3d1c1c);color:light-dark(#8a1f1f,#ffb3b3)}
+.combined{border:2px dashed var(--line);border-radius:10px;padding:12px;font:13.5px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;color:var(--muted);margin:8px 0 10px;min-height:56px}
+.combined.done{border-style:solid;border-color:var(--teal);color:var(--ink);background:var(--code)}
+.banner{background:#f6b545;color:#2a1a00;padding:14px max(5vw,16px);font-size:15.5px}
+.banner .wrap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.secbar{margin:4px 0 18px}
+.tealband .combined{border-color:#3c7078;color:#cfe8e4}.tealband .combined.done{background:#173f45;color:#e9f6f3;border-color:#9fe0dc}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:14px;margin-top:16px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{all:unset;cursor:pointer;display:block;aspect-ratio:16/10;background:var(--sea);position:relative}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--muted);font-size:13.5px;padding:10px;border:2px dashed var(--line);margin:8px;border-radius:8px}
+.thumb:focus-visible{outline:3px solid var(--oak);outline-offset:-3px}
+.tb{padding:10px 12px 12px;font-size:13.5px;display:flex;flex-direction:column;gap:6px;flex:1}
+.fn{font:600 12.5px ui-monospace,Menlo,monospace;overflow-wrap:anywhere}
+.badges{display:flex;flex-wrap:wrap;gap:5px}.badges span{background:var(--sea);border-radius:20px;padding:2px 8px;font-size:12px;white-space:nowrap}
+.badges .ok{background:#d6f3e3;color:#145c35}.badges .miss{background:#fde7c8;color:#7a4700}
+.tb p{margin:0}.btn.sm{min-height:36px;font-size:13px;padding:0 10px;margin-top:auto}
+.meter{height:10px;background:var(--line);border-radius:8px;overflow:hidden;flex:1;min-width:160px}.meter i{display:block;height:100%;background:var(--teal)}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;margin-top:14px}
+.ctl input[type=search]{font:16px Inter,sans-serif;min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:0 10px}
+.vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+#lb{position:fixed;inset:0;background:rgba(6,20,22,.86);display:none;place-items:center;z-index:20;padding:20px}
+#lb.on{display:grid}#lb figure{margin:0;max-width:min(1100px,96vw);color:#e9f6f3}#lb img,#lb video{max-width:100%;max-height:78vh;display:block;border-radius:10px;margin:auto}#lb figcaption{font-size:14px;margin-top:10px}
+.agent{display:grid;grid-template-columns:140px minmax(0,1fr);gap:14px;align-items:start}
+.agent img{width:140px;aspect-ratio:4/5;object-fit:cover;border-radius:10px;display:block}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+details{margin-top:10px}summary{cursor:pointer;font-weight:600;color:var(--teal);min-height:44px;display:flex;align-items:center}
+@media(max-width:520px){.agent{grid-template-columns:minmax(0,1fr)}.agent img{width:100%;max-width:260px}}
+.plan{border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+.stepline{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:4px}.stepline b{color:var(--ink);font-size:15px}
+.fname{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 6px}.fname code{font:600 13px ui-monospace,Menlo,monospace;background:var(--code);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+.atts{list-style:none;padding:0;margin:4px 0 8px;display:grid;gap:8px}
+.att{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:start;background:var(--code);border:1px solid var(--line);border-radius:10px;padding:8px}
+.att code{font-size:12.5px;font-weight:600}.sm{font-size:13px}
+.attbtn{all:unset;cursor:pointer;position:relative;display:block}.attbtn:focus-visible{outline:3px solid var(--oak)}
+.tm{display:block;width:96px;aspect-ratio:4/3;border-radius:8px;overflow:hidden;background:var(--sea);position:relative}
+.tm.dk{background:#0c2a2e}.tm img,.tm video{width:100%;height:100%;object-fit:contain;display:block}
+.tm .ph{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:11.5px;color:var(--muted);border:2px dashed var(--line);border-radius:8px;line-height:1.3}
+.big .tm{width:100%;aspect-ratio:4/5}.thumb .tm{width:100%;height:100%;aspect-ratio:auto;border-radius:0}
+.ai{position:absolute;top:4px;left:4px;background:var(--teal-d);color:#fff;border-radius:50%;width:22px;height:22px;display:grid;place-items:center;font-size:12px}
+.ast{display:inline-block;font-size:12px;font-weight:600;border-radius:20px;padding:2px 8px;margin:4px 6px 4px 0}.ast.ok{background:#d6f3e3;color:#145c35}.ast.miss{background:#fde2e2;color:#8a1f1f}
+.refs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin:14px 0 6px}
+.refc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:4px}.refc .tm{width:100%;aspect-ratio:1}
+#gNext{margin-top:8px;font-size:15px}
+.addrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:2px 0 6px}
+.plan.over{outline:3px dashed var(--teal);outline-offset:4px;border-radius:10px;background:var(--code)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--teal-d);color:#fff;padding:10px 16px;border-radius:24px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.story{counter-reset:s;display:grid;gap:12px}
+.scene{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.scene .t{font-family:Fraunces,serif;font-size:26px;color:var(--teal);white-space:nowrap}
+.tree{font:13.5px/1.6 ui-monospace,Menlo,monospace;background:var(--code);border-radius:10px;padding:14px;border:1px solid var(--line)}
+.check li{margin-bottom:6px}
+@media(max-width:820px){.hero-grid,.two,.builder{grid-template-columns:minmax(0,1fr)}.hero-grid figure:last-child{max-height:420px}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;font-weight:600}.stack td:empty{display:none}.scene{grid-template-columns:minmax(0,1fr)}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+
+<header class="band hero">
+  <div class="wrap">
+    <h1>One clinic, one look: the dental media library playbook</h1>
+    <p class="lede">Every room, fixture, uniform and light source extracted from the two master frames, turned into copy-ready image and video prompts so the generation team produces a consistent set for long-form video.</p>
+    <div class="hero-grid">
+      <figure><img src="assets/reception-wide.jpg" alt="Master frame: bright seafoam dental reception with oak counter, receptionist with headset, flowers and orchid"><figcaption>REF-01 · Reception (environment master)</figcaption></figure>
+      <figure><img src="assets/ai-receptionist-portrait.jpg" alt="Master frame: portrait of the AI receptionist with headset in mint blouse"><figcaption>REF-02 · AI Receptionist (character master)</figcaption></figure>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</header>
+
+<nav class="scroll top" aria-label="Sections"><form id="goForm" class="goform" role="search"><input id="goId" placeholder="Go to ID, e.g. A013" aria-label="Go to ID"><button class="btn sm">Go</button></form>
+  <a href="#creatives">Creatives</a><a href="#workflow">Workflow</a><a href="#style">Style bible</a><a href="#character">Annie</a><a href="#agents">Agent avatars</a><a href="#uniforms">Uniforms</a><a href="#rooms">Rooms</a><a href="#props">Props & fixtures</a><a href="#scenes">Scenes</a><a href="#shots">Shots & motion</a><a href="#brand">Brand cards</a><a href="#builder">Prompt builder</a><a href="#story">Long-video storyboard</a><a href="#library">Library & QA</a>
+</nav>
+<div class="banner" role="note"><div class="wrap"><b>Always use the COMBINED prompt.</b> Every prompt below has a <b>Combine</b> button that injects the parts in the right order (subject → character → style anchor → negative). Copy from the combined box, never from the raw prompt. Each section also has a <b>Combine all</b> button.</div></div>
+
+<section class="band" id="creatives"><div class="wrap">
+  <h2>Creatives: everything generated, previewed against the chart</h2>
+  <p>Every file has an ID (A001…) in production order, and each new image is built from earlier ones. Tiles load from the <b>Creatives</b> folder by exact file name; anything not made yet shows a placeholder, and every prompt below shows the same thumbnails under <b>Attach first</b>. To check your team's own folder, open it below. Files stay in your browser and are not uploaded.</p>
+  <h3>Reference images (always attach from here)</h3>
+  <div class="refs" id="refCards"></div>
+  <div class="row"><b id="gStat">Loading the chart…</b><div class="meter" aria-hidden="true"><i id="gBar" style="width:0"></i></div></div>
+  <div class="row" style="margin-top:8px"><button class="btn ghost sm" id="gCheck">Check now</button><label class="sm" style="display:flex;gap:6px;align-items:center;min-height:36px"><input type="checkbox" id="gAuto" checked> Auto-check every 10 s and when you return to this tab</label><span class="sm" id="gLive" style="color:var(--muted)">Checking…</span></div>
+  <div id="gNext"></div>
+  <div class="ctl">
+    <button class="btn" id="gConnect">Connect Creatives folder (live)</button>
+    <label class="btn ghost" for="gPick" style="display:flex;align-items:center;justify-content:center">Open folder (one-time)</label><input class="vh" id="gPick" type="file" webkitdirectory multiple>
+    <select id="gCat" aria-label="Category"></select>
+    <select id="gWho" aria-label="People"></select>
+    <select id="gSt" aria-label="Status"><option value="">All statuses</option><option value="1">Created</option><option value="0">Not created yet</option></select>
+    <input type="search" id="gQ" placeholder="Search file name or description" aria-label="Search">
+    <button class="btn" id="gCsv">Copy chart CSV (with status)</button>
+  </div>
+  <div id="gExtra"></div>
+  <div class="gal" id="gal"></div>
+  <div class="row" id="gMore" style="margin-top:14px"></div>
+</div></section>
+
+<section class="band" id="workflow"><div class="wrap">
+  <h2>How the team uses this</h2>
+  <div class="grid" id="steps"></div>
+</div></section>
+
+<section class="band tealband" id="style"><div class="wrap">
+  <h2>Style bible: paste this into every prompt</h2>
+  <p>The <b>Style Anchor</b> carries the whole environment. Put it after the subject and shot description, and always attach REF-01 as the style/image reference. Never edit the wording per prompt; consistency comes from repeating it verbatim.</p>
+  <div class="two">
+    <div><div class="label">STYLE ANCHOR (environment)</div><div class="prompt" id="anchor"></div><div id="combo-anchor"></div></div>
+    <div><div class="label">NEGATIVE PROMPT (use everywhere)</div><div class="prompt" id="negative"></div><button class="btn" data-copy="negative">Copy negative prompt</button></div>
+  </div>
+  <h3 style="margin-top:28px">Extracted design rules</h3>
+  <div class="scroll"><table class="stack"><thead><tr><th>Element</th><th>Rule (what must stay identical)</th></tr></thead><tbody id="rules"></tbody></table></div>
+</div></section>
+
+<section class="band" id="character"><div class="wrap">
+  <h2>Character master: Annie, the AI Receptionist</h2>
+  <p>Annie is the on-screen face of the AI voice receptionist. Lock her description and always attach REF-02 as the character/face reference. Change only pose, expression and action.</p>
+  <div class="two">
+    <div><div class="label">CHARACTER ANCHOR</div><div class="prompt" id="annie"></div><div id="combo-annie"></div></div>
+    <div><div class="label">Expression & action set to generate (one image each)</div><div class="grid" id="annieShots" style="grid-template-columns:minmax(0,1fr)"></div></div>
+  </div>
+</div></section>
+
+<section class="band" id="agents"><div class="wrap">
+  <h2>Agent avatars: the full AI team (8 agents)</h2>
+  <p>Eight AI agents, each with an approved reference portrait (REF-02 to REF-09) in the Creatives folder. Always attach the agent's REF as the character reference, and keep the outfit shown in it. The brand colour is for titles and graphics, not clothing. Every agent works in the same clinic, so the Style Anchor goes into every prompt.</p>
+  <div class="grid" id="agentCards"></div>
+</div></section>
+
+<section class="band" id="uniforms" style="background:var(--sea)"><div class="wrap">
+  <h2>Staff uniforms derived from the palette</h2>
+  <p>Only the receptionist look is in the references. The other roles below are built from the same colours (seafoam, deep teal, white) so every person in frame belongs to this clinic. Approve these once, then treat them as locked.</p>
+  <div class="grid" id="uniformCards"></div>
+</div></section>
+
+<section class="band" id="rooms"><div class="wrap">
+  <h2>Room library</h2>
+  <p>Each room prompt = room description + Style Anchor + negative. Generate the <b>empty plate</b> first (no people), then a version with staff. Empty plates are what editors use for B-roll, transitions and compositing.</p>
+  <div class="alert"><b>Shortcut for medium plates:</b> if the tool keeps returning a wide view, take the approved wide image and crop a 16:9 area from the bottom of it (ceiling out, desk or main furniture filling the frame), then upscale to 1920×1080. A crop keeps the room 100% identical. A016 was made this way.</div>
+  <div class="grid" id="roomCards"></div>
+</div></section>
+
+<section class="band" id="props" style="background:var(--sea)"><div class="wrap">
+  <h2>Props & fixtures: isolated asset prompts</h2>
+  <p>Product-style renders of each object on a seamless seafoam backdrop. Use them for inserts, compositing and as extra references when a room generation drifts.</p>
+  <div class="label">ASSET WRAPPER (append to every prop prompt)</div>
+  <div class="prompt" id="propWrap"></div>
+  <div class="grid" id="propCards" style="margin-top:16px"></div>
+</div></section>
+
+<section class="band" id="scenes"><div class="wrap">
+  <h2>Scenes with people: rooms + cast together</h2>
+  <p>Built after the room plates, uniforms and agent poses exist. Each scene attaches the room plate, the person's reference and the previous scene in the same room, so the clinic and the cast stay identical from shot to shot.</p>
+  <div class="grid" id="sceneCards"></div>
+</div></section>
+
+<section class="band" id="shots"><div class="wrap">
+  <h2>Shot grammar & motion prompts</h2>
+  <p>Stills come first; video comes from image-to-video on an approved still. Keep camera moves slow and single-direction so clips cut together in a long edit.</p>
+  <div class="scroll"><table class="stack"><thead><tr><th>Shot</th><th>Still prompt fragment</th><th>Image-to-video motion prompt</th><th>Length</th></tr></thead><tbody id="shotRows"></tbody></table></div>
+  <h3 style="margin-top:28px">Annie motion loops (image-to-video on REF-02 style stills)</h3>
+  <div class="grid" id="motionCards"></div>
+</div></section>
+
+<section class="band" id="brand" style="background:var(--sea)"><div class="wrap">
+  <h2>Brand cards: intro and end slates with the AISC logo</h2>
+  <p>Use REF-10 (A010) on light backgrounds and REF-11 (A011) on dark ones. The logo already carries aisolutioncompany.com under it. Attach the logo and never let the tool redraw it; if letters come out wrong, place the logo file on top in the video editor instead.</p>
+  <div class="grid" id="brandCards"></div>
+</div></section>
+
+<section class="band tealband" id="builder"><div class="wrap">
+  <h2>Prompt builder</h2>
+  <p>Pick the pieces for a custom shot. You get the file name, the images to attach (with thumbnails) and the combined prompt, in the same format as the plan.</p>
+  <div class="builder">
+    <div>
+      <label class="field">Room<select id="bRoom"></select></label>
+      <label class="field">Shot<select id="bShot"></select></label>
+      <label class="field">People in frame<select id="bStaff"></select></label>
+      <label class="field">Time of day<select id="bTime"></select></label>
+      <label class="field">Aspect ratio<select id="bAr"><option value="16:9">16:9 · long video / YouTube</option><option value="9:16">9:16 · Reels / Shorts</option><option value="1:1">1:1 · feed</option><option value="4:5">4:5 · portrait feed</option><option value="21:9">21:9 · cinematic</option></select></label>
+      <label class="field">Output format<select id="bFmt"><option value="generic">Generic (attach refs in the UI)</option><option value="mj">Midjourney (parameters appended)</option></select></label>
+    </div>
+    <div class="out" id="bPlan"></div>
+  </div>
+</div></section>
+
+<section class="band" id="story"><div class="wrap">
+  <h2>Long-video storyboard: “A patient's visit”</h2>
+  <p>A 10-scene sequence (about 2–3 minutes) that uses every core room once and features Annie at the start and end. Each clip animates its scene still and continues from the previous clip, so the cut is seamless.</p>
+  <div class="story" id="storyList"></div>
+</div></section>
+
+<section class="band" id="library" style="background:var(--sea)"><div class="wrap">
+  <h2>Library structure, naming & QA</h2>
+  <div class="two">
+    <div>
+      <h3>Folder structure</h3>
+      <div class="tree">DentalClinic_MediaLibrary/
+├── Creatives/       ALL generated images & clips, named exactly as file_name
+│                    in the chart CSV (the playbook previews this folder)
+├── Dental_Clinic_Media_Library_Manifest.csv   the chart: one row per file
+├── 00_REFERENCES/   REF-01 reception · REF-02 Annie · REF-03…09 agents (Sarah, Claire, Paula, Fiona, Emily, David, Megan) · REF-10/11 AISC logo (light / dark bg)
+├── 01_STYLE_BIBLE/  anchors.txt · palette.png · this playbook
+├── 02_CHARACTERS/   ANNIE/ · DENTIST/ · HYGIENIST/ · ASSISTANT/ · MANAGER/
+├── 03_ROOMS/        REC/ · WAIT/ · ENT/ · HALL/ · OPS/ · HYG/ · PED/
+│                    CONS/ · STER/ · IMG/ · BRK/ · BILL/ · EXT/
+│     └── each: /plates (empty) · /staffed · /video
+├── 04_PROPS/        isolated asset renders
+├── 05_VIDEO_CLIPS/  approved i2v clips by scene
+└── 06_REJECTS/      keep for prompt debugging</div>
+      <h3 style="margin-top:20px">File naming</h3>
+      <div class="prompt">{ROOM}_{SHOT}_{PEOPLE}_{TIME}_{AR}_v{###}.{ext}
+e.g. REC_WIDE_ANNIE_DAY_16x9_v003.png
+     OPS_MED_DENTIST_DAY_16x9_v001.mp4
+     PROP_ORCHID_NONE_DAY_1x1_v002.png</div>
+      <h3 style="margin-top:20px">Metadata sheet columns</h3>
+      <p>File name · room · shot · people · tool & model · seed · full prompt · refs attached · approved by · date · notes / drift issues.</p>
+    </div>
+    <div>
+      <h3>Consistency QA: reject if any fail</h3>
+      <ul class="check" id="qa"></ul>
+      <h3 style="margin-top:20px">Tool notes</h3>
+      <ul class="check">
+        <li><b>Reference-capable image models</b> (Midjourney, Flux Kontext, GPT-image, Gemini image, Ideogram): always upload REF-01 for environment and REF-02 for Annie. Start prompts with “Match the environment, colours and lighting of the reference image exactly.”</li>
+        <li><b>Midjourney:</b> use <code>--sref</code> with REF-01 and the omni/character reference (<code>--oref</code> in V7) with REF-02; add <code>--style raw</code>. Reuse one seed per room for plates. Parameter names change between versions, so confirm against current docs.</li>
+        <li><b>Image-to-video</b> (Kling, Runway, Veo, Hailuo, Pika): animate approved stills only, 5–10 s clips, describe motion only (the still already carries the look), and keep “static camera” or one slow move.</li>
+        <li><b>Long scenes:</b> take the last frame of a clip as the first frame of the next to chain continuous shots.</li>
+        <li>All people are AI-generated characters; do not use real staff or patient likenesses without signed releases.</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<button class="fab" id="fabNext" data-goto="">Next</button><button class="fab" id="fabTop" aria-label="Back to top">Top ↑</button>
+<div id="lb" role="dialog" aria-label="Preview"></div>
+<div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+
+<script>
+{
+const ANCHOR="Bright modern boutique dental clinic interior, soft seafoam-mint and pale aqua painted walls, light natural oak wood surfaces with fine straight grain, crisp matte white cabinetry and fixtures, teal-blue leather upholstery on brushed chrome bases, glass partition walls with a frosted horizontal band, minimalist framed line-art tooth prints in aqua tones, fresh flowers (pink and white lilies, pale pink roses, eucalyptus) in clear glass vases, white phalaenopsis orchids with magenta centres in glossy white pots, high-key soft diffused daylight from large windows on the right plus recessed square LED ceiling panels, neutral-cool 5000K white balance, computer monitors and wall screens switched off with glossy black screens unless the action needs something on screen, spotless and uncluttered, calm spa-like atmosphere, photorealistic editorial architectural photography, full-frame camera, shallow depth of field with soft background bokeh, gentle natural shadows";
+const NEG="dark or moody lighting, warm orange or yellow colour cast, harsh shadows, clutter, mess, stains, blood, close-up of sharp dental instruments or needles, distressed or crying patients, logos, brand names, readable text, signage lettering, watermarks, distorted hands, extra fingers, warped keyboards or screens, cartoon, 3D render look, plastic skin, oversaturated colours, fisheye distortion, fluorescent tube lighting, dated beige carpet, red or orange furniture, dark wood";
+const ANNIE="Annie, the clinic receptionist: a woman in her early 30s with long, voluminous, loosely wavy golden-blonde hair with honey highlights, parted slightly off-centre and falling past her shoulders; light warm skin, soft natural makeup, rosy-nude lips, warm approachable closed-mouth smile; wearing a flowing seafoam-mint long-sleeve V-neck blouse with a button placket and softly gathered sleeves; a black over-the-head single-ear call-centre headset on her left ear with a thin boom microphone near her mouth; small stud earrings, no other jewellery; seated at a light-oak reception counter with a slim white all-in-one computer with a switched-off glossy black screen, white wireless keyboard and white mouse";
+const PROPWRAP="isolated product photograph, centred, on a seamless soft seafoam-mint studio backdrop, soft diffused daylight from the right, gentle contact shadow, neutral-cool 5000K, photorealistic, crisp detail, no text, no logos";
+const NEG_VIDEO="face morphing, identity change, outfit changing colour, flicker, warping furniture or walls, melting hands, extra fingers, sudden camera moves, jump cuts, fast motion, text, logos, watermarks, colour shift to warm or dark";
+const chips=[["Seafoam wall","#CFE6E2"],["Aqua partition","#A9D0CB"],["Teal upholstery","#4F8F98"],["Deep teal","#2F6B75"],["Light oak","#D8B98E"],["Fixture white","#F6F8F7"],["Brushed chrome","#C7CDD0"],["Blouse mint","#BFE0D9"],["Lily pink","#F2BFCB"],["Orchid magenta","#A8306A"],["Eucalyptus","#8FA99A"]];
+const steps=[["1 · Lock the anchors","Save REF-01, REF-02, the Style Anchor, Character Anchor and negative prompt in 00_REFERENCES and 01_STYLE_BIBLE. Nobody rewrites them."],["2 · Build empty plates","Generate every room in the Room Library with no people, wide + medium + one detail angle. Approve against the QA list."],["3 · Build the cast","Generate Annie's expression set, then one approved still per uniform role. These become the character references for everything else."],["4 · Props & inserts","Render the prop list for cutaways and to fix drift (attach the prop render as an extra reference)."],["5 · Animate","Run image-to-video on approved stills only, using the motion prompts. 5–10 s clips, one camera move each."],["6 · Assemble & log","Name files with the convention, log seed + prompt in the metadata sheet, move rejects to 06_REJECTS."]];
+const rules=[["Screens","Every computer monitor, wall screen and TV is switched off: glossy black screen, no colour, no content. Only exception: a pose whose action needs the screen (e.g. Sarah's calendar), and then it shows soft abstract shapes with no readable text."],["Walls","Seafoam-mint / pale aqua, matte. Accent partitions in a slightly deeper aqua. Never white-only rooms, never grey."],["Wood","Light natural oak, straight grain, matte finish: counters, desks, table tops, door frames. No dark or reddish wood."],["Fixtures","Matte white cabinetry and dental units; brushed chrome hardware and bases; slim white electronics."],["Upholstery","Teal-blue leather/vinyl with rounded, padded forms (round-back stools, saddle seats, dental chair)."],["Glass","Clear glass partitions with one frosted horizontal band at mid-height; clinic depth visible through glass."],["Lighting","High-key, soft, diffused daylight from large windows (screen right in REF-01) + recessed square LED panels. Neutral-cool, no warm cast, minimal shadow."],["Florals & plants","Pink and white lilies, pale pink roses and eucalyptus in clear glass vases; white phalaenopsis orchids in glossy white pots. Fresh, never wilted."],["Artwork","Simple framed line-art tooth illustrations in aqua/teal on white, thin white or light frames."],["Hygiene props","Clear pump bottles of hand sanitizer and lotion (no readable labels), neat white card stacks."],["Camera look","Editorial photoreal, eye-level, 24–35mm for rooms, 50–85mm for people, shallow depth of field, soft bokeh."],["Mood","Calm, clean, premium, welcoming. Staff smile with closed or soft open mouths; no rushing, no stress."]];
+const annieShots=[["Neutral front portrait","medium close-up portrait, facing camera, warm closed-mouth smile, hands resting on keyboard"],["Greeting a patient","looking slightly off-camera to the left, friendly open smile, one hand raised in a small welcoming gesture"],["On a call","eyes down-left, fingertips lightly touching the headset boom mic, speaking warmly mid-sentence"],["Typing / booking","three-quarter view, eyes on the monitor, both hands typing, focused soft smile"],["Listening","head tilted slightly, attentive expression, gentle nod, lips closed"],["Confirming appointment","looking at camera, small confident nod, bright smile, as if saying ‘you’re all set’"],["Walking behind desk","full body, walking from left to right behind the counter holding a white tablet"],["After-hours (AI 24/7)","same desk at dusk, windows deep blue outside, interior lights on, Annie calm and smiling on a call"]];
+const uniforms=[
+["Front desk / Receptionist (Annie)","In reference","Flowing seafoam-mint long-sleeve V-neck blouse, black single-ear headset with boom mic, small studs. Seated at the oak counter.","front-desk receptionist wearing a flowing seafoam-mint long-sleeve V-neck blouse and a black single-ear headset with boom microphone"],
+["Dentist","Derived","Crisp white knee-length lab coat over deep teal (#2F6B75) scrubs, white leather sneakers, optional loupes on head, white or pale aqua mask lowered at chin when talking.","dentist in a crisp white knee-length lab coat over deep teal scrubs, white leather sneakers, friendly professional expression"],
+["Dental hygienist","Derived","Seafoam-mint scrub top and trousers matching the walls, white long-sleeve under-layer, white clogs, pale aqua nitrile gloves during care.","dental hygienist in seafoam-mint scrubs over a white long-sleeve undershirt, white clogs, pale aqua nitrile gloves"],
+["Dental assistant","Derived","Deep teal scrubs, white sneakers, pale aqua bouffant cap and mask during procedures only.","dental assistant in deep teal scrubs and white sneakers, pale aqua cap and mask during the procedure"],
+["Practice manager","Derived","White tailored blouse, light oak-tan trousers, slim teal lanyard with a blank white badge.","practice manager in a white tailored blouse and light tan trousers with a slim teal lanyard and blank white badge"],
+["Treatment / billing coordinator","Derived","Pale aqua knit cardigan over a white top, navy-free, white tablet in hand.","treatment coordinator wearing a pale aqua knit cardigan over a white top, holding a white tablet"]];
+const rooms=[
+["REC","Reception desk (front)","Master set · REF-01","Light-oak counter with white front panel, raised aqua privacy partition on the right, slim white all-in-one monitor, white keyboard and mouse, glass vase of lilies and roses on the left, white orchid on the partition, pump bottles and card stack, two teal round-back stools in the foreground, glass wall and treatment room visible behind.","Front view of the clinic reception desk: a long light-oak counter with a white front panel, a raised seafoam-aqua privacy partition at the right end with a white potted orchid on top, a slim white all-in-one computer with a switched-off glossy black screen, white wireless keyboard and mouse, a clear glass vase of pink and white lilies, pale pink roses and eucalyptus at the left end, two clear pump bottles and a neat stack of white cards, two teal-blue padded round-back stools in the soft-focus foreground, behind the desk a glass partition revealing a white dental chair with teal upholstery and an overhead light, large windows on the right"],
+["REC2","Reception workstation (behind desk)","Derived from REF-01","Receptionist's side of the same counter: white computer facing the receptionist, white drawer unit, headset on a stand, small orchid, view out to the waiting lounge.","View from behind the reception counter looking out toward the waiting lounge: light-oak desktop, slim white all-in-one computer with a switched-off glossy black screen, white keyboard and mouse, black headset resting on a white stand, small white orchid, matte white drawer unit below, seafoam walls and the entrance beyond in soft focus"],
+["WAIT","Waiting lounge","Derived","Teal upholstered armchairs and a low bench, oak coffee table with flowers, large windows, framed tooth art, a white wall-mounted screen, switched off (black).","Patient waiting lounge: rounded teal-blue upholstered armchairs and a low padded bench with brushed chrome legs, a round light-oak coffee table with a clear vase of pink lilies and eucalyptus, white orchid on a white side table, framed aqua line-art tooth prints on seafoam walls, a slim white wall-mounted screen with a switched-off glossy black screen, floor-to-ceiling windows with soft daylight, pale oak flooring"],
+["ENT","Entrance & vestibule","Derived","Frameless glass double doors, oak-panel feature wall, blank aqua sign plaque, planter.","Clinic entrance vestibule seen from inside: frameless glass double doors with brushed chrome handles, a light-oak slatted feature wall, a blank pale-aqua wall plaque with no text, a tall white planter with a green olive tree, seafoam walls, pale oak floor, bright daylight from outside"],
+["HALL","Corridor","Derived","Glass-fronted operatories with frosted bands either side, recessed LEDs, art at intervals.","Long clinic corridor with glass-fronted treatment rooms on both sides, each glass wall with a frosted horizontal band at mid-height, white dental chairs with teal upholstery visible through the glass, recessed square LED ceiling panels in a row, framed aqua tooth line-art prints, pale oak floor, one-point perspective"],
+["OPS","Treatment operatory","Matches background of REF-01","White dental chair with teal upholstery, overhead LED operating light, white delivery unit, white cabinetry with oak countertop, wall monitor, teal operator stools.","Modern dental treatment room: white dental chair with teal-blue upholstery, overhead LED operating light, white instrument delivery arm with neatly holstered handpieces, matte white cabinetry with a light-oak countertop, a slim white wall-mounted monitor with a switched-off glossy black screen, two teal round-back operator stools on chrome bases, a large window on the right with soft daylight, seafoam walls, a small orchid on the counter"],
+["HYG","Hygiene room","Derived","Smaller operatory, same chair, ceiling monitor for patient, window view of greenery.","Dental hygiene room: white dental chair with teal-blue upholstery, compact white delivery unit, ceiling-mounted white screen above the chair for the patient, switched off with a glossy black screen, seafoam walls, white cabinetry with oak top, large window with soft-focus green trees outside, calm bright atmosphere"],
+["PED","Pediatric corner / kids' room","Derived","Same palette, softened shapes, cloud-shaped aqua wall decals, small teal chairs, oak toy shelf.","Pediatric dental room in the same clinic style: white dental chair with teal upholstery, soft cloud-shaped pale aqua wall shapes, a low light-oak shelf with neat wooden toys, small teal-blue child chairs, a ceiling-mounted screen with a switched-off glossy black screen, playful yet calm, bright daylight"],
+["CONS","Consultation office","Derived","Oak desk, two teal chairs for patients, white monitor with a switched-off black screen, orchid, bookshelf.","Treatment consultation office: light-oak desk with a slim white all-in-one computer with a switched-off glossy black screen, two teal-blue padded guest chairs, a white high-back desk chair, white shelving with a few neutral books and a white orchid, framed aqua tooth print, large window with soft daylight"],
+["STER","Sterilization center","Derived","White cabinetry, stainless sinks, autoclave units, sealed pouches in clear bins, glass window to hallway.","Dental sterilization room: run of matte white cabinetry with stainless-steel sinks and a light-oak open shelf, two white benchtop autoclave units, neatly sealed instrument pouches in clear bins, glass window to the corridor with frosted band, bright clean lighting, spotless"],
+["IMG","Imaging room","Derived","White panoramic X-ray unit, aqua accent wall, lead-glass window.","Dental imaging room: sleek white panoramic dental X-ray unit standing against a seafoam-aqua accent wall, a small viewing window, white cabinet, light-oak floor, soft bright lighting, minimalist"],
+["BRK","Staff break room","Derived","Oak table, white chairs with teal cushions, white kitchenette, plants.","Staff break room: light-oak dining table with white chairs and teal seat cushions, white handleless kitchenette with an oak countertop, a clear vase of eucalyptus, potted green plants, seafoam walls, large window with soft daylight"],
+["BILL","Back office / billing","Derived","Two oak workstations, white monitors, headsets, aqua acoustic panels.","Clinic back office for scheduling and billing: two light-oak desks side by side, slim white monitors with switched-off glossy black screens, black headsets on white stands, white task chairs, seafoam acoustic felt wall panels, white orchid, bright soft daylight"],
+["EXT","Exterior facade","Derived","Single-storey suburban medical building, white render, oak slat canopy, big windows, no signage text.","Exterior of a modern single-storey suburban dental clinic: white rendered facade with a light-oak slatted canopy over the glass entrance, large windows revealing seafoam interiors, neat landscaped beds with green shrubs, a blank pale-aqua sign panel with no text, clear blue morning sky, bright daylight"]];
+const props=[["Reception counter module","long light-oak reception counter with a matte white front panel and a raised seafoam-aqua privacy partition at one end"],["Round-back stool","teal-blue padded leather round-back stool on a brushed chrome gas-lift base with a chrome foot ring"],["Saddle stool","teal-blue leather saddle stool on a chrome five-star base"],["Computer set","slim white all-in-one computer on a silver stand with a white wireless keyboard and white mouse, switched-off glossy black screen"],["Headset","black over-the-head single-ear call-centre headset with a thin boom microphone"],["Floral arrangement","clear glass cylinder vase of pink lilies, white lilies, pale pink roses and eucalyptus stems"],["Orchid","white phalaenopsis orchid with magenta centres in a glossy white ceramic pot, staked stems"],["Hygiene bottles","two clear pump bottles of hand sanitizer and lotion with blank white labels, beside a neat stack of white cards in a clear acrylic holder"],["Tooth wall art","framed minimalist line-art tooth illustration in aqua on white paper, thin white frame"],["Dental chair","white dental patient chair with teal-blue upholstery and an attached white delivery unit"],["Operating light","modern white LED dental operating light on an articulated arm"],["Lounge armchair","rounded teal-blue upholstered lounge armchair with slim brushed chrome legs"],["Coffee table","round light-oak coffee table with slim legs"],["Glass partition","section of frameless clear glass partition with a frosted horizontal band at mid-height"],["Uniform flat-lay","flat-lay of a seafoam-mint blouse, deep teal scrubs, white lab coat and a black headset arranged neatly"]];
+const shots=[["Establishing wide","WIDE","wide establishing shot, eye level, 24mm lens, whole room visible","very slow dolly forward, steady, subtle parallax through the glass, nothing else moves","6–10 s"],["Medium","MED","medium shot, chest-up framing, 50mm lens, eye level","static camera, subject breathes and blinks naturally, slight smile change","5 s"],["Close-up","CU","close-up, 85mm lens, face fills a third of frame, creamy bokeh","static camera, gentle push-in of 5%, subject speaks softly","5 s"],["Over-the-shoulder","OTS","over-the-shoulder from a patient at the counter, patient soft-focus in foreground","static camera, receptionist looks up and smiles at the patient","5 s"],["Patient POV approach","POV","first-person point of view walking toward the reception desk, eye level","smooth slow walk forward toward the desk, slight handheld sway, receptionist looks up","8 s"],["Detail insert","INS","macro detail insert, shallow depth of field","slow rack focus from foreground object to background","4–5 s"],["Lateral track","TRK","side-on view, 35mm lens, scene laid out horizontally","slow lateral truck left to right, constant speed","8 s"],["Top-down","TOP","overhead top-down view of the desk surface","very slow rotation of 5 degrees, hands enter frame to type","5 s"]];
+const motions=[["Idle loop","She sits at the desk, blinks naturally, small breath, gentle smile, glances at the monitor and back to camera. Static camera. Hair moves very slightly. Background stays still."],["Answering a call","She lifts her hand to touch the headset microphone, looks down-left and begins speaking warmly, nodding once. Static camera, soft daylight, nothing else moves."],["Greeting","She looks up from the screen to camera, smile widens, small welcoming nod. Slow 5% push-in."],["Typing & confirming","She types on the white keyboard, glances at the screen, then looks to camera with a confident nod. Static camera."],["Hand-off to dentist","She turns to her right and gestures politely toward the corridor; a dentist in a white coat walks past in soft focus behind the glass. Static camera."]];
+const agents=[
+["ANNIE","Annie","AI Receptionist","answers calls and books appointments","Green","#2e9e5b","REC","REF-02_annie.jpg","",""," at the reception desk answering a call and booking an appointment on the white computer"],
+["SARAH","Sarah","Schedule optimizer","fills cancellations from the waitlist","Orange","#e8833a","BILL","REF-03_sarah.jpg","a woman in her early 30s with long, sleek, straight dark-brown hair with a centre part falling past her shoulders, light olive skin, warm brown eyes, bright open smile","a light heather-grey tailored blazer over a white V-neck blouse","rearranging appointments on a colourful calendar grid on the white monitor, filling a cancelled slot"],
+["CLAIRE","Claire","Case acceptance","follows up on treatment plans and ordered labs","Blue","#2f6fd6","CONS","REF-04_claire.jpg","a woman in her mid-30s of East Asian descent, black hair pulled back into a soft low bun with a centre part and a few loose strands, warm brown eyes, gentle reassuring smile","a cream oatmeal ribbed-knit V-neck cardigan","walking a patient through a treatment plan on a white tablet across the oak desk"],
+["PAULA","Paula","Intake","","Red","#d6453d","REC2","REF-05_paula.jpg","a woman in her mid-30s with long, voluminous, tight curly dark-brown hair with caramel highlights, light-brown skin, warm brown eyes, big bright smile, gold hoop earrings and a thin gold necklace","a navy-blue button-up blouse with an open collar","completing a new-patient intake form on a white tablet while speaking warmly"],
+["FIONA","Fiona","Follow-up","reminders, recalls and no-shows","Purple","#8a4fd0","BILL","REF-06_fiona.jpg","a woman in her mid-20s with shoulder-length wavy copper-auburn hair swept to one side, fair skin with light freckles, green eyes, soft closed-mouth smile","a charcoal-grey heathered crew-neck knit sweater","making a reminder call while ticking through a recall list on the white monitor"],
+["EMILY","Emily","Reviews","","Pink","#d94f8f","WAIT","REF-07_emily.jpg","a woman in her early 30s with long, wavy, copper-red hair worn over one shoulder, fair freckled skin, grey-green eyes, warm smile, small gold hoop earrings","a navy-and-white vertical-striped collared shirt","smiling at a white tablet showing a glowing five-star rating graphic with no readable text"],
+["DAVID","David","Fax and documents","reads, matches and routes them","Teal","#1f9a9a","BILL","REF-08_david.jpg","a man in his mid-30s of Asian descent with short black hair swept back and up with faded sides, light stubble beard and moustache, warm brown eyes, relaxed friendly smile","a navy crew-neck knit sweater with thin light-grey horizontal stripes","feeding documents into a sleek white desktop scanner and matching them on the white monitor"],
+["MEGAN","Megan","Operations manager","keeps tasks, teams and workflows on track, and reports on every agent","Indigo","#4b4fc4","HALL","REF-09_megan.jpg","a woman in her late 40s with long, wavy, glossy black hair past her shoulders, olive skin, dark-brown eyes, calm confident subtle smile, small silver hoop earrings","a tailored black blazer over a black silk blouse","walking the corridor holding a white tablet showing a team dashboard, checking progress"]];
+const story=[["0:00","EXT · Establishing wide","Morning exterior, slow push toward the glass entrance.","EXT_WIDE_NONE_MORN"],["0:10","ENT · POV","Patient walks through the glass doors; seafoam vestibule opens up.","ENT_POV_NONE_DAY"],["0:20","REC · POV → OTS","Approach the desk; Annie looks up and greets (Greeting loop).","REC_OTS_ANNIE_DAY"],["0:35","REC · Close-up / insert","Annie types and confirms; insert of hands on white keyboard and the lily vase.","REC_CU_ANNIE_DAY + REC_INS_NONE_DAY"],["0:50","WAIT · Lateral track","Lounge with a calm patient seated; orchid insert.","WAIT_TRK_NONE_DAY"],["1:05","HALL · Establishing wide","Hygienist leads the way down the glass corridor.","HALL_WIDE_HYGIENIST_DAY"],["1:20","HYG / OPS · Medium","Hygienist and dentist with the patient in the teal chair; overhead light on.","OPS_MED_DENTIST_DAY"],["1:45","CONS · Medium","Treatment coordinator explains the plan on the white monitor.","CONS_MED_COORD_DAY"],["2:05","REC · Medium","Checkout: Annie books the next visit and smiles to camera (Typing & confirming loop).","REC_MED_ANNIE_DAY"],["2:20","REC · Dusk wide","After hours: lights on, blue windows, Annie answering a call; closing line about the 24/7 AI receptionist.","REC_WIDE_ANNIE_DUSK"]];
+const qa=["Walls read seafoam/aqua, not white, grey or green-yellow.","Wood is light oak; no dark, red or walnut tones.","Upholstery is the same teal-blue; chrome, not black, bases.","Lighting is high-key and neutral-cool, windows on the same side as the room's master plate.","Annie: same hair length/colour, same mint blouse, headset on the same ear, no new jewellery.","Uniform colours match the role table exactly.","No readable text, logos or brand marks on screens, bottles, signs or devices.","Hands, fingers, keyboards and monitors are anatomically/physically correct.","Flowers are lilies/roses/eucalyptus or white orchids only, fresh, never wilted.","Dental instruments are neat and holstered; nothing frightening in focus.","Video: one camera move, no morphing face, outfit or furniture between first and last frame."];
+const times=[["DAY","Daytime (master)",""],["MORN","Early morning","early morning light, slightly cooler daylight, low sun angle through the windows"],["DUSK","After-hours / dusk","after hours at dusk, deep blue sky outside the windows, interior LED panels and warm-neutral accent lights on, still bright and clean inside"]];
+const steps2=[["1 · Follow the A-numbers","Every file has an ID (A001…) in production order. Make them in that order: each new image uses earlier finished images as its references."],["2 · Attach first","Above every prompt you'll see the exact images to attach, as thumbnails, in order. A red note means a reference isn't made yet: make that ID first."],["3 · Combine & generate","Press Combine, copy the combined prompt (prompt + negative), paste it with the attachments. Regenerate until it passes the QA list."],["4 · Save with the exact name","Copy the name from Save as, rename the download to it and drop it in the Creatives folder. The gallery and the next prompts pick it up automatically."],["5 · Animate last","Video clips (phase 7) animate approved stills. Their start frame is listed under Attach first."],["6 · Log it","Fill tool, seed and approver in the chart CSV (Copy chart CSV in the Creatives section) and move rejects to 06_REJECTS."]];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug=t=>t.toUpperCase().replace(/[^A-Z0-9]+/g,'-').replace(/^-|-$/g,'');
+const cap=t=>t.charAt(0).toUpperCase()+t.slice(1);
+const rn=c=>(rooms.find(r=>r[0]===c)||[0,c])[1];
+const shotBy=c=>shots.find(s=>s[1]===c);
+const agentAnchor=a=>a[0]==='ANNIE'?ANNIE:`${a[1]}, the clinic's AI agent (${a[2]}): ${a[8]}; wearing ${a[9]}; face, hair and outfit identical to the approved reference portrait ${a[7]}`;
+const agentPoses=a=>{const st='in the '+rn(a[6]).toLowerCase();return[
+ ["POSE01-SIGNATURE-TASK","Signature task",`three-quarter view, ${a[10]}, ${st}`],
+ ["POSE02-ON-A-CALL","On a call",`wearing a black single-ear headset with a thin boom microphone, fingertips touching the mic, speaking warmly, ${st}`],
+ ["POSE03-TALKING-TO-CAMERA","Talking to camera",`medium shot looking into camera, explaining with an open-hand gesture, friendly confident expression, ${st}`],
+ ["POSE04-LISTENING","Listening / nodding",`attentive listening expression, slight head tilt, gentle nod, ${st}`],
+ ["POSE05-FULL-BODY","Full body",`full-body standing shot ${st}, relaxed confident posture, gentle smile`],
+ ["POSE06-VERTICAL-TALKING-HEAD","Vertical talking head",`9:16 vertical chest-up talking-head framing, looking into camera mid-sentence, natural smile, ${st}`]]};
+const agentClips=a=>[["IDLE-LOOP","Idle loop",`${a[1]} sits naturally, blinks, small breath, gentle smile, glances away and back to camera. Static camera, background still.`,3],["TALKING-TO-CAMERA","Talking to camera",`${a[1]} speaks to camera with natural mouth movement and small hand gestures, nods once and smiles. Slow 5% push-in.`,2]];
+const USE={REC:'Arrival, check-in, booking, checkout, phone answering scenes',REC2:'Receptionist POV, booking-system and call-handling scenes',WAIT:'Patient waiting, calm atmosphere, transitions',ENT:'Arrival and opening scenes',HALL:'Walking to treatment, transitions between rooms',OPS:'Treatment, dentist explanation, procedure context',HYG:'Cleaning / hygiene appointments',PED:'Kids and family dentistry content',CONS:'Treatment planning, pricing and consultation talk',STER:'Hygiene, safety and infection-control messaging',IMG:'X-ray / diagnostics topics',BRK:'Team culture, behind-the-scenes',BILL:'Billing, insurance, scheduling, admin automation topics',EXT:'Opening / closing establishing shot, location intro'};
+const STAFFCODES=["DENTIST","HYGIENIST","ASSISTANT","MANAGER","COORD"];
+
+/* ---------- the production plan: one entry per file, in order ---------- */
+const PLAN=[],BYF={};
+const P=o=>{o.aid='A'+String(PLAN.length+1).padStart(3,'0');o.n=PLAN.length+1;o.type=o.type||'image';o.ar=o.ar||'16:9';o.time=o.time||'DAY';o.people=o.people||'NONE';o.status=o.status||'Planned';o.attach=o.attach||[];o.neg=o.neg===undefined?(o.type==='video'?NEG_VIDEO:NEG):o.neg;PLAN.push(o);BYF[o.file]=o;return o};
+const lockImg=att=>'Use the attached images as exact references, in this order: '+att.map((a,i)=>`(${i+1}) ${a[0]}, ${a[1]}`).join('; ')+'. Keep everything consistent with them';
+const lockVid=att=>`Animate the attached start frame ${att[0][0]} exactly as it is: same people, outfits, room and light`+(att[1]?`; continue smoothly from the last frame of ${att[1][0]}`:'');
+const R01=['REF-01_reception.jpg','environment master: colours, lighting, materials and furniture style'];
+const wideOf=c=>`${c}_WIDE_NONE_DAY_16x9_v001.png`;
+// Phase 0 references
+P({file:'REF-01_reception.jpg',phase:'0 · References',category:'Reference',room_code:'REC',room_name:rn('REC'),shot_code:'WIDE',people:'ANNIE',status:'Approved',desc:'Master environment reference: bright seafoam dental reception, light-oak counter, aqua partition with white orchid, lily vase, teal stools, Annie at the computer with headset, operatory visible through glass.',use:'Style reference for every generation; opening reception shot.',section:'Style bible'});
+agents.forEach(a=>P({file:a[7],phase:'0 · References',category:'Reference',room_code:a[6],room_name:rn(a[6]),shot_code:'CU',people:a[0],ar:a[0]==='ANNIE'?'9:16':'4:5',status:'Approved',desc:a[0]==='ANNIE'?'Master character reference: Annie, the AI receptionist, smiling at camera, wavy blonde hair, seafoam-mint blouse, black headset, hands on keyboard.':`Approved reference portrait of ${a[1]}, ${a[2]}${a[3]?' – '+a[3]:''}: ${a[8]}, wearing ${a[9]}.`,use:`Face, hair and outfit reference for every ${a[1]} image`,section:'Agent avatars'}));
+P({file:'REF-10_aisc-logo-light-bg.png',phase:'0 · References',category:'Reference',ar:'2.2:1',status:'Approved',desc:'AISC logo for light backgrounds: gradient AiSC wordmark, dark-navy AI SOLUTION COMPANY descriptor and dark aisolutioncompany.com under it.',use:'Intro / end cards and lower thirds on white or seafoam backgrounds',section:'Brand cards'});
+P({file:'REF-11_aisc-logo-dark-bg.png',phase:'0 · References',category:'Reference',ar:'2.2:1',status:'Approved',desc:'AISC logo for dark backgrounds: gradient AiSC wordmark, white AI SOLUTION COMPANY descriptor and cyan aisolutioncompany.com under it.',use:'Intro / end cards and lower thirds on deep teal or navy backgrounds',section:'Brand cards'});
+// Phase 1 room plates
+let prevWide=null;
+rooms.forEach(r=>{const c=r[0],w=wideOf(c);
+ const att=c==='REC'?[['REF-01_reception.jpg','environment master: recreate this exact reception with no people in it']]:[R01,...(prevWide?[[prevWide,'previous room plate: same camera height, lens and light']]:[])];
+ P({id:'rmW'+c,file:w,phase:'1 · Room plates',category:'Room plate',room_code:c,room_name:r[1],shot_code:'WIDE',desc:`Empty ${r[1].toLowerCase()}, wide view, no people. ${r[3]}`,use:USE[c]+'; B-roll and backgrounds',section:'rooms',attach:att,parts:[['Reference lock',lockImg(att)],['Shot + room',`Wide establishing shot, eye level, 24mm lens, whole room visible, of: ${r[4]}, no people`],['Style anchor',ANCHOR]]});
+ const a2=[R01,[w,"this room's approved wide plate: same room, furniture and light, but you must frame it much closer"]];
+ P({id:'rmM'+c,file:`${c}_MED_NONE_DAY_16x9_v001.png`,phase:'1 · Room plates',category:'Room plate',room_code:c,room_name:r[1],shot_code:'MED',desc:`Empty ${r[1].toLowerCase()}, medium view of the main furniture, no people.`,use:USE[c]+'; B-roll',section:'rooms',attach:a2,parts:[['Reference lock',lockImg(a2)],['Shot + room',`Medium shot, 50mm lens, eye level. Move the camera about halfway into the room so the main furniture fills the frame from edge to edge. The ceiling and ceiling lights must be completely out of frame and only a narrow strip of soft-focus background shows above the furniture. This must be a clearly closer, different framing from reference 2: do not repeat its composition or camera position. Keep the same background that reference 2 shows behind the furniture (same walls, glass and view), only closer and softly out of focus; do not invent a new wall, shelf or doorway. Keep every object identical to reference 2, including the headset type. Room: ${r[4]}, no people`],['Style anchor',ANCHOR]]});
+ const a3=[[w,"this room's approved wide plate: take one small detail from it and fill the frame with it"]];
+ P({id:'rmI'+c,file:`${c}_INS_NONE_DAY_16x9_v001.png`,phase:'1 · Room plates',category:'Room plate',room_code:c,room_name:r[1],shot_code:'INS',desc:`Detail insert from the ${r[1].toLowerCase()} (flowers, surface or fixture), shallow depth of field.`,use:'Cutaways and transitions',section:'rooms',attach:a3,parts:[['Reference lock',lockImg(a3)],['Shot + room',`Macro detail insert, 100mm lens, very shallow depth of field: one signature detail (flowers, oak grain, a fixture or upholstery) fills the whole frame, everything else is soft blur. Do not show the whole room or repeat the framing of the reference. Detail taken from: ${r[4]}, no people`],['Style anchor',ANCHOR]]});
+ prevWide=w});
+// Phase 2 props
+const PROPROOM=['REC','REC','OPS','REC','REC','REC','REC','REC','WAIT','OPS','OPS','WAIT','WAIT','HALL','REC'];
+props.forEach(([t,p],i)=>{const att=[R01,[wideOf(PROPROOM[i]),'room plate where this object appears: match its exact design']];if(i===props.length-1)att.push(['REF-02_annie.jpg','outfit reference for the blouse and headset']);
+ P({id:'pr'+i,file:`PROP_${slug(t)}_NONE_DAY_1x1_v001.png`,phase:'2 · Props',category:'Prop',ar:'1:1',desc:`Isolated ${t.toLowerCase()} on a seafoam backdrop: ${p}.`,use:'Cutaway / insert, compositing, or extra reference when a room drifts',section:'props',title:t,attach:att,parts:[['Reference lock',lockImg(att)],['Prop',p],['Asset wrapper',PROPWRAP]]})});
+// Phase 3 Annie
+{const att=[R01,['REF-02_annie.jpg',"Annie's face, hair and outfit"],[wideOf('HALL'),'corridor plate for the background']];
+ P({id:'unANNIE',file:'UNIFORM_ANNIE_FULLBODY_9x16_v001.png',phase:'3 · Annie',category:'Uniform reference',room_code:'HALL',room_name:rn('HALL'),shot_code:'WIDE',people:'ANNIE',ar:'9:16',desc:`Full-body uniform reference for Annie (front desk): ${uniforms[0][2]}`,use:'Full-body reference for Annie in walking and standing shots',section:'uniforms',attach:att,parts:[['Reference lock',lockImg(att)],['Character anchor',ANNIE],['Role & uniform','Full-body standing portrait, relaxed confident posture, gentle smile, standing in the clinic corridor'],['Style anchor',ANCHOR]]});}
+let prevA='UNIFORM_ANNIE_FULLBODY_9x16_v001.png';
+annieShots.forEach(([t,a],i)=>{const att=[R01,['REF-02_annie.jpg',"Annie's face, hair and outfit"],[wideOf('REC'),'reception plate for the setting'],[prevA,'previous Annie image: keep her identical']];
+ const f=`CHAR_ANNIE_POSE${String(i+1).padStart(2,'0')}_${slug(t)}_16x9_v001.png`;
+ P({id:'anP'+i,file:f,phase:'3 · Annie',category:'Character pose',room_code:'REC',room_name:rn('REC'),people:'ANNIE',time:/after-hours/i.test(t)?'DUSK':'DAY',desc:`Annie – ${t}: ${a}.`,use:'Use when the script needs Annie to '+t.toLowerCase(),section:'character',title:t,attach:att,parts:[['Reference lock',lockImg(att)],['Character anchor',ANNIE],['Pose / action',a],['Style anchor',ANCHOR]]});prevA=f});
+// Phase 4 staff uniforms
+let prevU='UNIFORM_ANNIE_FULLBODY_9x16_v001.png';
+uniforms.slice(1).forEach((u,i)=>{const code=STAFFCODES[i],f=`UNIFORM_${code}_FULLBODY_9x16_v001.png`,att=[R01,[wideOf('HALL'),'corridor plate for the background'],[prevU,'previous uniform reference: same framing, light and corridor']];
+ P({id:'un'+code,file:f,phase:'4 · Staff uniforms',category:'Uniform reference',room_code:'HALL',room_name:rn('HALL'),shot_code:'WIDE',people:code,ar:'9:16',desc:`Full-body uniform reference for the ${u[0].toLowerCase()}: ${u[2]}`,use:'Character reference for any shot featuring this role',section:'uniforms',attach:att,parts:[['Reference lock',lockImg(att)],['Role & uniform',`Full-body standing portrait of a ${u[3]}, relaxed confident posture, gentle smile, standing in the clinic corridor`],['Style anchor',ANCHOR]]});prevU=f});
+// Phase 5 agents
+agents.slice(1).forEach(a=>{let prev=null;agentPoses(a).forEach(([c,t,x])=>{const v=c.includes('VERTICAL'),f=`CHAR_${a[0]}_${c}_${v?'9x16':'16x9'}_v001.png`;
+ const att=[R01,[a[7],`${a[1]}'s face, hair and outfit`],[wideOf(a[6]),`${rn(a[6]).toLowerCase()} plate for the setting`],...(prev?[[prev,`previous ${a[1]} image: keep identical`]]:[])];
+ P({id:'ag'+a[0]+c,file:f,phase:'5 · Agent avatars',category:'Agent pose',room_code:a[6],room_name:rn(a[6]),people:a[0],ar:v?'9:16':'16:9',desc:`${a[1]} (${a[2]}) – ${t}: ${x}.`,use:`When the script features ${a[1]} (${a[2]})`,section:'agents',title:t,attach:att,parts:[['Reference lock',lockImg(att)],['Character anchor',agentAnchor(a)],['Pose',x],['Style anchor',ANCHOR]]});prev=f})});
+// Phase 6 staffed scenes
+const personRef=p=>{const a=agents.find(x=>x[0]===p);if(a)return[a[7],`${a[1]}'s face, hair and outfit`];if(STAFFCODES.includes(p))return[`UNIFORM_${p}_FULLBODY_9x16_v001.png`,'approved uniform reference for this role'];return null};
+const personText=p=>{const a=agents.find(x=>x[0]===p);if(a)return agentAnchor(a);const i=STAFFCODES.indexOf(p);return i>=0?'a '+uniforms[i+1][3]:''};
+const SC=[['EXT','WIDE','NONE','MORN','Morning exterior establishing shot'],['ENT','POV','NONE','DAY','Patient POV walking through the glass entrance doors'],['REC','WIDE','ANNIE','DAY','Annie at the reception desk, full room visible'],['REC','MED','ANNIE','DAY','Annie at the desk, chest-up, smiling'],['REC','CU','ANNIE','DAY','Close-up of Annie speaking into the headset'],['REC','OTS','ANNIE','DAY','Over a patient’s shoulder as Annie greets them'],['REC','POV','ANNIE','DAY','Patient POV walking up to the desk, Annie looks up'],['REC','WIDE','ANNIE','DUSK','After-hours reception at dusk, Annie answering a call (24/7 AI)'],['REC2','MED','ANNIE','DAY','Behind the desk: Annie typing a booking on the white computer'],['WAIT','TRK','NONE','DAY','Lateral track across the waiting lounge'],['HALL','WIDE','HYGIENIST','DAY','Hygienist walking down the glass corridor'],['OPS','MED','DENTIST','DAY','Dentist in white coat beside the teal dental chair, talking to camera'],['HYG','MED','HYGIENIST','DAY','Hygienist preparing the hygiene room'],['CONS','MED','COORD','DAY','Treatment coordinator explaining a plan at the oak desk'],['BILL','MED','MANAGER','DAY','Practice manager at the back-office workstation'],['PED','MED','ASSISTANT','DAY','Dental assistant in the kids’ room with teal chairs']];
+const lastInRoom={};
+SC.forEach(([r,sc,p,t,d])=>{const rm=rooms.find(x=>x[0]===r),s=shotBy(sc),f=`${r}_${sc}_${p}_${t}_16x9_v001.png`,pr=personRef(p);
+ const att=[R01,[wideOf(r),'room plate: same room, furniture and camera height'],...(pr?[pr]:[]),...(lastInRoom[r]?[[lastInRoom[r],'previous scene in this room: keep continuity']]:[])];
+ const tt=times.find(x=>x[0]===t);
+ P({id:'sc'+f,file:f,phase:'6 · Scenes with people',category:'Staffed scene',room_code:r,room_name:rm[1],shot_code:sc,people:p,time:t,desc:d+'.',use:USE[r],section:'scenes',title:`${rm[1]} · ${s[0]}${p!=='NONE'?' · '+p:''}${t!=='DAY'?' · '+t:''}`,attach:att,parts:[['Reference lock',lockImg(att)],['Shot + room',`${cap(s[2])}, of: ${rm[4]}${p==='NONE'?', no people':''}`],...(p!=='NONE'?[['People','Featuring '+personText(p)]]:[]),['Action',d],...(tt[2]?[['Time of day',cap(tt[2])]]:[]),['Style anchor',ANCHOR]]});lastInRoom[r]=f});
+// Phase 7 video
+const ANNIEMAP=[0,2,1,3,0];
+motions.forEach(([t,m],i)=>{const st=PLAN.filter(e=>e.id&&e.id.startsWith('anP'))[ANNIEMAP[i]].file,att=[[st,'start frame']];
+ P({id:'mo'+i,file:`VID_ANNIE_${slug(t)}_16x9_v001.mp4`,type:'video',phase:'7 · Video clips',category:'Motion loop',room_code:'REC',room_name:rn('REC'),people:'ANNIE',desc:`5–10 s clip of Annie – ${t}: ${m}`,use:'Talking/reaction moments for Annie; loop under voice-over',section:'shots',title:t,attach:att,parts:[['Start-frame lock',lockVid(att)],['Motion',m],['Consistency lock','Photorealistic, consistent face and outfit, no text']]})});
+agents.slice(1).forEach(a=>agentClips(a).forEach(([c,t,m,pi])=>{const st=PLAN.filter(e=>e.people===a[0]&&e.category==='Agent pose')[pi].file,att=[[st,'start frame']];
+ P({id:'agc'+a[0]+c,file:`VID_${a[0]}_${c}_16x9_v001.mp4`,type:'video',phase:'7 · Video clips',category:'Motion loop',room_code:a[6],room_name:rn(a[6]),people:a[0],desc:`5–10 s clip of ${a[1]} (${a[2]}) – ${t.toLowerCase()}.`,use:`Under voice-over when ${a[1]} is speaking or introduced`,section:'agents',title:'Clip · '+t,attach:att,parts:[['Start-frame lock',lockVid(att)],['Motion',m],['Consistency lock','Photorealistic, consistent face and outfit, no text']]})}));
+let prevClip=null;
+story.forEach(([tc,h,d,f],i)=>{const key=f.split(' ')[0],still=key+'_16x9_v001.png',s=shotBy(key.split('_')[1]),att=[[still,'start frame'],...(prevClip?[[prevClip,'previous clip']]:[])],file=`VID_STORY_S${String(i+1).padStart(2,'0')}_${key}_v001.mp4`;
+ P({id:'st'+i,file,type:'video',phase:'7 · Video clips',category:'Storyboard clip',room_code:key.split('_')[0],room_name:rn(key.split('_')[0]),shot_code:key.split('_')[1],people:key.split('_')[2],time:key.split('_')[3],desc:d,use:`Patient-visit video, scene ${i+1} at ${tc}`,scene:`S${String(i+1).padStart(2,'0')} @ ${tc}`,section:'story',attach:att,parts:[['Start-frame lock',lockVid(att)],['Motion',`${d} ${s?cap(s[3]):''}`],['Consistency lock','Photorealistic, consistent faces, outfits and room, no text']]});prevClip=file});
+
+// Phase 8 brand cards
+const LOGORULE='Place the attached AISC logo exactly as provided, with the website line under it: do not redraw, retype, recolour, stretch or add effects to it, and keep every letter crisp. Add no other text';
+[['LIGHT','16:9','REF-10_aisc-logo-light-bg.png','a bright soft seafoam-mint background with a gentle light-oak and white blurred clinic interior far behind, high-key daylight'],['DARK','16:9','REF-11_aisc-logo-dark-bg.png','a deep teal-to-midnight background with a softly blurred clinic reception at dusk far behind, subtle glow'],['LIGHT','9:16','REF-10_aisc-logo-light-bg.png','a bright soft seafoam-mint background with a gentle light-oak and white blurred clinic interior far behind, high-key daylight'],['DARK','9:16','REF-11_aisc-logo-dark-bg.png','a deep teal-to-midnight background with a softly blurred clinic reception at dusk far behind, subtle glow']].forEach(([m,ar,logo,bg])=>{
+ const att=[[logo,'the AISC logo: place it exactly as provided'],[wideOf('REC'),'reception plate for the blurred background']];
+ P({id:'bc'+m+ar,file:`BRAND_ENDCARD_${m}_${ar.replace(':','x')}_v001.png`,phase:'8 · Brand cards',category:'Brand card',room_code:'REC',room_name:rn('REC'),ar,desc:`${m==='LIGHT'?'Light':'Dark'} ${ar} intro / end card: AISC logo centred on ${bg.split(' with')[0].replace(/^a /,'')}.`,use:'Opening and closing title card; under voice-over CTA',section:'brand',title:`${m==='LIGHT'?'Light':'Dark'} end card · ${ar}`,attach:att,parts:[['Reference lock',lockImg(att)],['Layout',`${ar} title card: the AISC logo centred, taking about 45% of the ${ar==='16:9'?'width':'height'}, generous empty space around it, on ${bg}`],['Logo rule',LOGORULE],['Style anchor','Photorealistic, premium, calm, clean']],neg:NEG+', distorted logo, misspelled text, extra words'})});
+/* ---------- combine ---------- */
+const REG={};
+function combo(id,parts,neg=NEG){REG[id]={parts,neg};
+  const order=parts.map((x,i)=>`<span>${i+1} · ${esc(x[0])}</span>`).join('')+(neg?`<span class="neg">${parts.length+1} · Negative prompt</span>`:'');
+  return `<div class="alert"><b>Use as a combined prompt.</b> Press Combine, then copy the combined result below.</div><div class="order" aria-label="Injection order">${order}</div><div class="row"><button class="btn" data-combine="${id}">Combine with negative</button><button class="btn ghost" data-copy="${id}">Copy prompt only</button></div><div class="combined" id="c_${id}" aria-live="polite">Combined prompt appears here after you press Combine.</div><button class="btn" data-copy="c_${id}" data-needs="${id}">Copy combined prompt</button>`}
+const mainText=parts=>parts.map(x=>x[1].trim().replace(/[.;,]?$/,'.')).join(' ');
+function doCombine(id){const r=REG[id],box=$('c_'+id);if(!r||!box)return;const main=mainText(r.parts);
+  box.textContent=r.neg?`PROMPT:\n${main}\n\nNEGATIVE PROMPT:\n${r.neg}`:`PROMPT:\n${main}\n\n(Negative already included via --no)`;box.classList.add('done')}
+
+/* ---------- file status ---------- */
+let LOCAL={},EXIST={};
+const isVidF=f=>/\.(mp4|mov|webm)$/i.test(f);
+const VER={};
+const srcOf=f=>LOCAL[f]||('Creatives/'+encodeURIComponent(f)+(VER[f]?'?v='+VER[f]:''));
+const aidOf=f=>BYF[f]?BYF[f].aid:'';
+const thumbHTML=(f,big)=>{const dark=/dark-bg/.test(f);return `<span class="tm${dark?' dk':''}" data-tm="${esc(f)}"><span class="ph">${esc(aidOf(f)||'')}<br>not made yet</span></span>`};
+function paintThumbs(){document.querySelectorAll('[data-tm]').forEach(el=>{const f=el.dataset.tm;
+  if(EXIST[f]){const s=esc(srcOf(f));if(el.dataset.on!==s){el.dataset.on=s;el.innerHTML=isVidF(f)?`<video src="${s}" muted preload="metadata"></video>`:`<img src="${s}" alt="${esc(f)}" loading="lazy">`}}
+  else if(el.dataset.on){delete el.dataset.on;el.innerHTML=`<span class="ph">${esc(aidOf(f))}<br>not made yet</span>`}});
+ document.querySelectorAll('[data-attst]').forEach(el=>{const f=el.dataset.attst,ok=EXIST[f];el.className='ast '+(ok?'ok':'miss');el.textContent=ok?'Ready':`Make ${aidOf(f)} first`});
+ document.querySelectorAll('[data-selfst]').forEach(el=>{const ok=EXIST[el.dataset.selfst];el.className='ast '+(ok?'ok':'miss');el.textContent=ok?'Created':'Not created yet'})}
+
+/* ---------- the per-prompt block ---------- */
+function block(e){
+ const att=e.attach.length?`<ol class="atts">${e.attach.map(([f,role],i)=>`<li class="att"><button class="attbtn" data-view="${esc(f)}" aria-label="Preview ${esc(f)}">${thumbHTML(f)}<b class="ai">${i+1}</b></button><div><code>${esc(f)}</code><div class="sm">${esc(aidOf(f))} · ${esc(role)}</div><span class="ast" data-attst="${esc(f)}"></span><button class="btn ghost sm" data-copytxt="${esc(f)}">Copy name</button></div></li>`).join('')}</ol>`:'<p class="sm">Nothing to attach.</p>';
+ return `<div class="plan" id="blk-${e.aid}" data-drop="${esc(e.file)}">
+ <div class="stepline"><b>${e.aid}</b> · step ${e.n} of ${PLAN.length} · ${esc(e.phase)} <span class="ast" data-selfst="${esc(e.file)}"></span></div>
+ <div class="addrow"><label class="btn ghost sm">Add finished image<input class="vh" type="file" accept="image/*,video/*" data-add="${esc(e.file)}"></label><span class="sm" style="color:var(--muted)">or drop the file anywhere on this card</span></div>
+ <div class="label">Save as (exact name)</div><div class="fname"><code>${esc(e.file)}</code><button class="btn sm" data-copytxt="${esc(e.file)}">Copy name</button></div>
+ <div class="label">Attach first, in this order</div>${att}
+ <div class="label">Used in</div><p class="sm" style="margin:0 0 6px">${esc(e.use)}</p>
+ <div class="label">Prompt</div><div class="prompt" id="${e.aid}">${esc(mainText(e.parts))}</div>${combo(e.aid,e.parts,e.neg)}</div>`}
+const sec=s=>PLAN.filter(e=>e.section===s&&e.parts);
+
+/* ---------- static parts ---------- */
+$('anchor').textContent=ANCHOR;$('negative').textContent=NEG;$('annie').textContent=ANNIE;$('propWrap').textContent=PROPWRAP;
+$('combo-anchor').innerHTML=combo('anchor',[['Style anchor',ANCHOR]]);$('combo-annie').innerHTML=combo('annie',[['Character anchor',ANNIE],['Style anchor',ANCHOR]]);
+$('chips').innerHTML=chips.map(([n,h])=>`<div class="chip"><i style="background:${h}"></i><div><b>${n}</b><span>${h}</span></div></div>`).join('');
+$('steps').innerHTML=steps2.map(([t,d])=>`<div class="card"><h3>${t}</h3><p style="margin:0;font-size:15px">${d}</p></div>`).join('');
+$('rules').innerHTML=rules.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join('');
+$('shotRows').innerHTML=shots.map(s=>`<tr><td><b>${s[0]}</b><br><span style="color:var(--muted);font-size:13px">${s[1]}</span></td><td>${s[2]}</td><td>${s[3]}</td><td style="white-space:nowrap">${s[4]}</td></tr>`).join('');
+$('qa').innerHTML=qa.map(q=>`<li>${q}</li>`).join('');
+$('refCards').innerHTML=PLAN.filter(e=>e.category==='Reference').map(e=>`<div class="refc"><button class="attbtn big" data-view="${esc(e.file)}">${thumbHTML(e.file)}</button><div class="sm"><b>${e.aid}</b> · <code>${esc(e.file)}</code></div><div class="sm">${esc(e.use)}</div><button class="btn ghost sm" data-copytxt="${esc(e.file)}">Copy name</button></div>`).join('');
+
+/* ---------- sections ---------- */
+$('annieShots').innerHTML=sec('character').map(e=>`<div class="card"><h3>${esc(e.title)}</h3>${block(e)}</div>`).join('');
+$('agentCards').innerHTML=agents.map(a=>{const id='ag'+a[0],items=PLAN.filter(e=>e.people===a[0]&&e.section==='agents');
+ const inner=a[0]==='ANNIE'?'<p class="sm">Annie\'s images and clips are in the <a href="#character">Annie section</a> (A-numbers in phase 3).</p>':items.map(e=>`<h3 style="margin-top:16px">${esc(e.title)}</h3>${block(e)}`).join('');
+ return `<div class="card" id="agent-${a[0]}"><div class="agent"><button class="attbtn big" data-view="${esc(a[7])}">${thumbHTML(a[7])}</button><div><h3>${esc(a[1])}</h3><div class="meta"><span class="dot" style="background:${a[5]}"></span>${esc(a[2])} · ${esc(a[4])}</div>${a[3]?`<p class="sm">${esc(cap(a[3]))}.</p>`:''}<p class="sm" style="color:var(--muted)">Home room: ${esc(rn(a[6]))}<br>Ref: <b>${esc(aidOf(a[7]))}</b> <code>${esc(a[7])}</code></p></div></div><div class="label" style="margin-top:12px">Character anchor</div><div class="prompt" id="${id}">${esc(agentAnchor(a))}</div>${combo(id,[['Character anchor',agentAnchor(a)],['Style anchor',ANCHOR]])}<details><summary>${a[0]==='ANNIE'?'Where to find Annie\'s prompts':`Pose & clip prompts (${items.length})`}</summary>${inner}</details></div>`}).join('');
+$('uniformCards').innerHTML=uniforms.map((u,i)=>{const e=PLAN.find(x=>x.id===(i?'un'+STAFFCODES[i-1]:'unANNIE'));return `<div class="card" id="uni-${i}"><h3>${esc(u[0])}</h3><div class="meta">${esc(u[1])}</div><p style="font-size:15px">${esc(u[2])}</p>${block(e)}</div>`}).join('');
+$('roomCards').innerHTML=rooms.map(r=>{const [w,m,ins]=['rmW','rmM','rmI'].map(k=>PLAN.find(e=>e.id===k+r[0]));return `<div class="card" id="room-${r[0]}"><h3>${esc(r[1])}</h3><div class="meta">Code ${r[0]} · ${esc(r[2])}</div><p style="font-size:14.5px">${esc(r[3])}</p><h3 style="font-size:16px">Wide plate</h3>${block(w)}<details><summary>Medium plate + detail insert (2 more)</summary><h3 style="font-size:16px;margin-top:10px">Medium plate</h3>${block(m)}<h3 style="font-size:16px;margin-top:16px">Detail insert</h3>${block(ins)}</details></div>`}).join('');
+$('propCards').innerHTML=sec('props').map(e=>`<div class="card"><h3>${esc(e.title)}</h3>${block(e)}</div>`).join('');
+$('sceneCards').innerHTML=sec('scenes').map(e=>`<div class="card"><h3>${esc(e.title)}</h3><p class="sm">${esc(e.desc)}</p>${block(e)}</div>`).join('');
+$('motionCards').innerHTML=sec('shots').map(e=>`<div class="card"><h3>${esc(e.title)}</h3>${block(e)}</div>`).join('');
+$('brandCards').innerHTML=sec('brand').map(e=>`<div class="card"><h3>${esc(e.title)}</h3>${block(e)}</div>`).join('');
+$('storyList').innerHTML=story.map(([t,h,d],i)=>{const e=PLAN.find(x=>x.id==='st'+i);return `<div class="scene"><div class="t">${t}</div><div><h3>${esc(h)}</h3><p style="margin:0 0 6px;font-size:15px">${esc(d)}</p><details><summary>Clip prompt · ${e.aid}</summary>${block(e)}</details></div></div>`}).join('');
+
+/* ---------- builder ---------- */
+const people=[["NONE","No people (empty plate)"],...agents.map(a=>[a[0],`${a[1]} – ${a[2]}`]),...uniforms.slice(1).map((u,i)=>[STAFFCODES[i],u[0]])];
+const fill=(el,arr)=>{$(el).innerHTML=arr.map(a=>`<option value="${esc(a[0])}">${esc(a[1])}</option>`).join('')};
+fill('bRoom',rooms.map(r=>[r[0],r[1]]));fill('bShot',shots.map(s=>[s[1],s[0]]));fill('bStaff',people);fill('bTime',times);
+let saved={};try{saved=JSON.parse(localStorage.getItem('dmlBuilder2')||'{}')}catch(err){}
+['bRoom','bShot','bStaff','bTime','bAr','bFmt'].forEach(k=>{if(saved[k])$(k).value=saved[k];$(k).addEventListener('change',build)});
+function build(){
+ const r=rooms.find(x=>x[0]===$('bRoom').value),s=shots.find(x=>x[1]===$('bShot').value),p=$('bStaff').value,t=times.find(x=>x[0]===$('bTime').value),ar=$('bAr').value,fmt=$('bFmt').value;
+ const file=`${r[0]}_${s[1]}_${p}_${t[0]}_${ar.replace(':','x')}_v001.png`,pr=personRef(p);
+ const att=[R01,[wideOf(r[0]),'room plate: same room, furniture and camera height'],...(pr?[pr]:[])];
+ let parts=[['Reference lock',lockImg(att)],['Shot + room',`${cap(s[2])}, of: ${r[4]}${p==='NONE'?', no people':''}`],...(p!=='NONE'?[['People','Featuring '+personText(p)]]:[]),...(t[2]?[['Time of day',cap(t[2])]]:[]),['Style anchor',ANCHOR],['Aspect ratio','Aspect ratio '+ar]];
+ let neg=NEG;
+ if(fmt==='mj'){const out=mainText(parts.slice(1,-1))+` --ar ${ar} --style raw --sref [${R01[0]} URL]`+(pr?` --oref [${pr[0]} URL] --ow 100`:'')+' --no '+NEG.split(', ').slice(0,12).join(', ');parts=[['Assembled prompt with MJ parameters',out]];neg=''}
+ const inPlan=BYF[file];
+ const e={aid:'BLD',n:inPlan?inPlan.n:'—',phase:inPlan?`same file as ${inPlan.aid} in the plan`:'custom (not in the plan)',file,attach:att,use:inPlan?inPlan.use:USE[r[0]],parts,neg};
+ $('bPlan').innerHTML=block(e).replace('step — of '+PLAN.length,'custom shot');
+ paintThumbs();
+ try{localStorage.setItem('dmlBuilder2',JSON.stringify({bRoom:r[0],bShot:s[1],bStaff:p,bTime:t[0],bAr:ar,bFmt:fmt}))}catch(err){}}
+build();
+
+/* ---------- section combine-all bars ---------- */
+document.querySelectorAll('section').forEach(sc=>{if(!sc.querySelector('[data-combine]')||sc.id==='creatives')return;const h=sc.querySelector('h2'),d=document.createElement('div');d.className='secbar';d.innerHTML=`<button class="btn" data-combine-all="${sc.id}">Combine all prompts in this section</button>`;(h.nextElementSibling&&h.nextElementSibling.tagName==='P'?h.nextElementSibling:h).after(d)});
+
+/* ---------- gallery ---------- */
+const opts=(el,label,vals)=>{$(el).innerHTML=`<option value="">${label}</option>`+[...new Set(vals)].filter(Boolean).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('')};
+opts('gCat','All phases',PLAN.map(e=>e.phase));opts('gWho','All people',PLAN.map(e=>e.people).sort());
+function stats(){const n=PLAN.filter(e=>EXIST[e.file]).length;$('gStat').textContent=`${n} of ${PLAN.length} files created`;$('gBar').style.width=(n/PLAN.length*100)+'%';
+ const next=PLAN.find(e=>!EXIST[e.file]);$('fabNext').innerHTML=next?`Next: <b>${next.aid}</b>`:'All done';$('fabNext').dataset.goto=next?next.aid:'';$('gNext').innerHTML=next?`Next to make: <b>${next.aid}</b> <code>${esc(next.file)}</code> <a href="#blk-${next.aid}" data-goto="${next.aid}">Open its prompt</a>`:'Everything in the plan is created.'}
+let SHOW=24;
+function renderGal(){const c=$('gCat').value,w=$('gWho').value,st=$('gSt').value,q=$('gQ').value.trim().toLowerCase();
+ let list=PLAN.filter(e=>(!c||e.phase===c)&&(!w||e.people===w)&&(!st||String(+!!EXIST[e.file])===st)&&(!q||(e.aid+' '+e.file+' '+e.desc).toLowerCase().includes(q)));
+ const total=list.length;list=list.slice(0,SHOW);
+ $('gal').innerHTML=list.length?list.map(e=>`<div class="tile"><button class="thumb attbtn" data-view="${esc(e.file)}" aria-label="Preview ${esc(e.file)}">${thumbHTML(e.file)}</button><div class="tb"><div class="fn"><b>${e.aid}</b> · ${esc(e.file)}</div><div class="badges"><span data-selfst="${esc(e.file)}"></span><span>${esc(e.phase)}</span>${e.people!=='NONE'?`<span>${esc(e.people)}</span>`:''}<span>${esc(e.ar)}</span></div><p>${esc(e.desc)}</p>${e.attach.length?`<p class="sm" style="color:var(--muted)"><b>Built from:</b> ${e.attach.map(a=>`${esc(aidOf(a[0]))}`).join(', ')}</p>`:''}<div class="row" style="margin-top:auto"><button class="btn ghost sm" data-copytxt="${esc(e.file)}">Copy name</button>${e.parts?`<a class="btn ghost sm" href="#blk-${e.aid}" data-goto="${e.aid}" style="display:inline-flex;align-items:center;text-decoration:none">Open prompt</a>`:''}</div></div></div>`).join(''):'<p>No files match these filters.</p>';
+ $('gMore').innerHTML=total>SHOW?`<span class="sm">Showing ${SHOW} of ${total}</span> <button class="btn ghost sm" data-more="24">Show 24 more</button> <button class="btn ghost sm" data-more="all">Show all</button>`:(total?`<span class="sm">Showing all ${total}</span>`:'');
+ paintThumbs();stats()}
+const probe=(f,bust)=>new Promise(res=>{let done=false;const fin=v=>{if(!done){done=true;res(v)}};setTimeout(()=>fin(false),9000);
+ const stamp=Date.now(),src=LOCAL[f]||('Creatives/'+encodeURIComponent(f)+(bust?'?v='+stamp:''));
+ const ok=()=>{if(bust&&!LOCAL[f])VER[f]=stamp;fin(true)};
+ if(isVidF(f)){const v=document.createElement('video');v.preload='metadata';v.muted=true;v.onloadedmetadata=ok;v.onerror=()=>fin(false);v.src=src}else{const im=new Image();im.onload=ok;im.onerror=()=>fin(false);im.src=src}});
+const refreshAll=()=>{renderGal();paintThumbs()};
+let checking=false;
+async function recheck(scope){if(checking)return;checking=true;
+ const miss=PLAN.filter(e=>!EXIST[e.file]),list=scope==='all'?PLAN:miss.slice(0,30);let changed=0;
+ await Promise.all(list.map(async e=>{const ok=await probe(e.file,scope==='all'||!EXIST[e.file]);if(ok!==!!EXIST[e.file]){EXIST[e.file]=ok;changed++}}));
+ checking=false;$('gLive').textContent=`Last checked ${new Date().toLocaleTimeString()}${changed?` · ${changed} file${changed>1?'s':''} updated`:''}`;
+ if(changed){document.querySelectorAll('[data-tm]').forEach(el=>delete el.dataset.on);refreshAll();say(`${changed} new file${changed>1?'s':''} found`)}}
+renderGal();
+Promise.all(PLAN.map(async e=>{EXIST[e.file]=await probe(e.file)})).then(()=>{refreshAll();$('gLive').textContent='Auto-check is on'});
+let auto=true;setInterval(()=>{if(auto&&!document.hidden)recheck()},10000);
+window.addEventListener('focus',()=>{if(auto)recheck()});document.addEventListener('visibilitychange',()=>{if(!document.hidden&&auto)recheck()});
+$('gCheck').addEventListener('click',()=>recheck('all'));
+$('gAuto').addEventListener('change',ev=>{auto=ev.target.checked;$('gLive').textContent=auto?'Auto-check is on':'Auto-check is off'});
+
+/* dropped / added files: kept in this browser so they survive a reload */
+let DB=null;
+try{const rq=indexedDB.open('dml-creatives',1);rq.onupgradeneeded=()=>rq.result.createObjectStore('files');rq.onsuccess=()=>{DB=rq.result;try{const tx=DB.transaction('files').objectStore('files');const all=tx.getAll(),keys=tx.getAllKeys();keys.onsuccess=()=>{all.onsuccess=()=>{keys.result.forEach((k,i)=>{if(BYF[k]){LOCAL[k]=URL.createObjectURL(all.result[i]);EXIST[k]=true}});if(keys.result.length)refreshAll()}}}catch(err){}}}catch(err){}
+const keep=(name,file)=>{try{DB&&DB.transaction('files','readwrite').objectStore('files').put(file,name)}catch(err){}};
+function addLocal(name,file){if(!BYF[name])return;LOCAL[name]=URL.createObjectURL(file);EXIST[name]=true;keep(name,file);
+ document.querySelectorAll(`[data-tm="${CSS.escape(name)}"]`).forEach(el=>delete el.dataset.on);refreshAll();
+ say(`${BYF[name].aid} added${file.name!==name?`. Save it to Creatives as ${name}`:''}`)}
+document.addEventListener('change',ev=>{const i=ev.target.closest('[data-add]');if(i&&i.files[0]){addLocal(i.dataset.add,i.files[0]);i.value=''}});
+document.addEventListener('dragover',ev=>{const d=ev.target.closest('[data-drop]');if(d){ev.preventDefault();d.classList.add('over')}});
+document.addEventListener('dragleave',ev=>{const d=ev.target.closest('[data-drop]');if(d&&!d.contains(ev.relatedTarget))d.classList.remove('over')});
+document.addEventListener('drop',ev=>{const d=ev.target.closest('[data-drop]');if(!d)return;ev.preventDefault();d.classList.remove('over');const f=ev.dataTransfer.files[0];if(f)addLocal(d.dataset.drop,f)});
+
+/* live folder (browsers that allow it) */
+let DIR=null;const MOD={};
+async function scanDir(){if(!DIR)return;let changed=0;try{for await(const [n,h] of DIR.entries()){if(h.kind!=='file'||!BYF[n])continue;const f=await h.getFile();if(MOD[n]!==f.lastModified){MOD[n]=f.lastModified;LOCAL[n]=URL.createObjectURL(f);EXIST[n]=true;changed++}}}catch(err){DIR=null;say('Lost access to the folder. Connect it again.');return}
+ if(changed){document.querySelectorAll('[data-tm]').forEach(el=>delete el.dataset.on);refreshAll();$('gLive').textContent=`Live folder · ${changed} file${changed>1?'s':''} updated ${new Date().toLocaleTimeString()}`}}
+$('gConnect').addEventListener('click',async()=>{if(!window.showDirectoryPicker){say('This browser can\'t watch a folder. Use Open folder, or drop images on their cards.');return}
+ try{DIR=await window.showDirectoryPicker();await scanDir();setInterval(scanDir,4000);$('gLive').textContent='Live folder connected: new files appear within a few seconds'}catch(err){say(err&&err.name==='AbortError'?'No folder chosen':'Live folder isn\'t allowed here. Use Open folder, or drop images on their cards.')}});
+['gCat','gWho','gSt'].forEach(k=>$(k).addEventListener('change',()=>{SHOW=24;renderGal()}));$('gQ').addEventListener('input',()=>{SHOW=24;renderGal()});
+$('gPick').addEventListener('change',ev=>{const fs=[...ev.target.files].filter(f=>/\.(png|jpe?g|webp|gif|mp4|mov|webm)$/i.test(f.name));fs.forEach(f=>{LOCAL[f.name]=URL.createObjectURL(f)});
+ const extra=fs.map(f=>f.name).filter(n=>!BYF[n]);PLAN.forEach(e=>{if(LOCAL[e.file])EXIST[e.file]=true});
+ $('gExtra').innerHTML=`<div class="alert" style="margin-top:14px"><b>${fs.length} files loaded from your folder.</b> ${extra.length?`${extra.length} don't match a name in the plan. Rename each to its exact Save-as name: <code>${extra.slice(0,12).map(esc).join(', ')}${extra.length>12?' …':''}</code>`:'Every file matches a name in the plan.'}</div>`;
+ document.querySelectorAll('[data-tm]').forEach(el=>delete el.dataset.on);renderGal();paintThumbs()});
+
+/* ---------- CSV ---------- */
+const COLS=['asset_id','step','phase','file_name','asset_type','category','room_code','room_name','shot_code','people','time_of_day','aspect_ratio','description','use_in_video','attach_first','prompt','negative_prompt','storyboard_scene','playbook_section','status','tool_model','seed','created_date','approved_by','notes'];
+const rowOf=e=>({asset_id:e.aid,step:e.n,phase:e.phase,file_name:e.file,asset_type:e.type,category:e.category,room_code:e.room_code||'',room_name:e.room_name||'',shot_code:e.shot_code||'',people:e.people,time_of_day:e.time,aspect_ratio:e.ar,description:e.desc,use_in_video:e.use,attach_first:e.attach.map(a=>`${aidOf(a[0])} ${a[0]}`).join(' | '),prompt:e.parts?mainText(e.parts):'',negative_prompt:e.parts?e.neg:'',storyboard_scene:e.scene||'',playbook_section:e.section,status:EXIST[e.file]&&e.status==='Planned'?'Generated':e.status,tool_model:'',seed:'',created_date:'',approved_by:'',notes:''});
+const toCSV=()=>{const qv=v=>{v=String(v??'');return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};return [COLS.join(','),...PLAN.map(e=>{const r=rowOf(e);return COLS.map(c=>qv(r[c])).join(',')})].join('\n')};
+window.__planCSV=toCSV;
+
+/* ---------- navigation ---------- */
+const jump=(sid,items,label)=>{const sc=$(sid);if(!sc)return;const n=document.createElement('nav');n.className='jump';n.setAttribute('aria-label',label);n.innerHTML=`<span class="sm">Jump to:</span>`+items.map(([h,t])=>`<a href="#${h}" data-jump="${h}">${esc(t)}</a>`).join('');const bar=sc.querySelector('.secbar')||sc.querySelector('h2');bar.after(n)};
+jump('character',sec('character').map(e=>['blk-'+e.aid,`${e.aid} ${e.title}`]),'Annie images');
+jump('agents',agents.map(a=>['agent-'+a[0],a[1]]),'Agents');
+jump('uniforms',uniforms.map((u,i)=>['uni-'+i,u[0].split(' (')[0]]),'Uniforms');
+jump('rooms',rooms.map(r=>['room-'+r[0],r[1]]),'Rooms');
+jump('props',sec('props').map(e=>['blk-'+e.aid,e.title]),'Props');
+jump('scenes',sec('scenes').map(e=>['blk-'+e.aid,`${e.aid} ${e.room_code} ${e.shot_code}${e.people!=='NONE'?' '+e.people:''}`]),'Scenes');
+jump('shots',sec('shots').map(e=>['blk-'+e.aid,`${e.aid} ${e.title}`]),'Annie clips');
+jump('story',story.map((x,i)=>['blk-'+PLAN.find(e=>e.id==='st'+i).aid,`${x[0]} ${x[1].split(' ·')[0]}`]),'Storyboard');
+const goTo=id=>{const el=$(id);if(!el)return false;let d=el.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}el.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600);return true};
+$('goForm').addEventListener('submit',ev=>{ev.preventDefault();let v=$('goId').value.trim().toUpperCase();if(/^\d+$/.test(v))v='A'+v.padStart(3,'0');const e=PLAN.find(x=>x.aid===v)||PLAN.find(x=>x.file.toUpperCase()===v);if(!e){say('No ID '+v);return}if(!(e.parts&&goTo('blk-'+e.aid))){$('gQ').value=e.aid;SHOW=24;renderGal();goTo('creatives')}});
+const navLinks=[...document.querySelectorAll('nav.top a')];
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){navLinks.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+x.target.id));const on=navLinks.find(a=>a.classList.contains('on'));if(on){const nv=on.parentElement;nv.scrollLeft=on.offsetLeft-nv.clientWidth/2+on.clientWidth/2}}}),{rootMargin:'-45% 0px -50% 0px'});
+document.querySelectorAll('section[id]').forEach(s=>io.observe(s));
+window.addEventListener('scroll',()=>$('fabTop').classList.toggle('show',scrollY>900),{passive:true});
+$('fabTop').addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+
+/* ---------- events ---------- */
+let tt;
+const say=m=>{const t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),1800)};
+const copyText=async(txt,msg)=>{try{await navigator.clipboard.writeText(txt);say(msg)}catch(err){say('Copy blocked: '+txt.slice(0,60))}};
+const closeLb=()=>{$('lb').classList.remove('on');$('lb').innerHTML=''};
+document.addEventListener('click',async ev=>{const t=ev.target;
+ const cb=t.closest('[data-combine]');if(cb){doCombine(cb.dataset.combine);say('Combined. Now copy the combined prompt');return}
+ const ca=t.closest('[data-combine-all]');if(ca){$(ca.dataset.combineAll).querySelectorAll('[data-combine]').forEach(x=>doCombine(x.dataset.combine));say('All prompts in this section combined');return}
+ const ct=t.closest('[data-copytxt]');if(ct){copyText(ct.dataset.copytxt,'File name copied');return}
+ const g=t.closest('[data-goto]');if(g){ev.preventDefault();if(g.dataset.goto)goTo('blk-'+g.dataset.goto);return}
+ const j=t.closest('[data-jump]');if(j){ev.preventDefault();goTo(j.dataset.jump);return}
+ const mo=t.closest('[data-more]');if(mo){SHOW=mo.dataset.more==='all'?9999:SHOW+24;renderGal();return}
+ const v=t.closest('[data-view]');if(v){const f=v.dataset.view;if(!EXIST[f]){say(`${aidOf(f)} ${f} is not made yet`);return}const s=esc(srcOf(f)),e=BYF[f];$('lb').innerHTML=`<figure>${isVidF(f)?`<video src="${s}" controls autoplay muted></video>`:`<img src="${s}" alt="${esc(f)}" style="${/dark-bg/.test(f)?'background:#0c2a2e;padding:20px':''}">`}<figcaption><b>${esc(aidOf(f))}</b> · ${esc(f)}${e?' · '+esc(e.desc):''}</figcaption></figure>`;$('lb').classList.add('on');return}
+ if(t.closest('#lb')){closeLb();return}
+ if(t.closest('#gCsv')){copyText(toCSV(),'Chart CSV copied');return}
+ const b=t.closest('[data-copy]');if(b){if(b.dataset.needs&&!$('c_'+b.dataset.needs).classList.contains('done'))doCombine(b.dataset.needs);copyText($(b.dataset.copy).textContent,'Copied to clipboard')}});
+document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeLb()});
+
+}
+</script>
+</body>
+</html>
